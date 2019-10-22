@@ -1,12 +1,14 @@
 /**
  * <p>Company: www.black-shop.cn</p>
  *
- * <p>Copyright: Copyright (c) 2018</p>
+ * <p>Copyright: Copyright (c) 2018-2050</p>
  * <p>
  * black-shop(黑店) 版权所有,并保留所有权利。
  */
+
 package cn.blackshop.user.entity;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.ToString;
 
@@ -18,7 +20,7 @@ import java.util.Date;
  */
 @Data
 @ToString
-//@Table(name = "bs_user_receipt_address")
+@TableName("bs_user_receipt_address")
 public class UserReceiptAddress {
 
 	/**
