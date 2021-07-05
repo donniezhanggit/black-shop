@@ -9,14 +9,21 @@ package cn.blackshop.user.controller;
 
 import cn.blackshop.common.core.basic.ResponseResult;
 import cn.blackshop.common.core.basic.ResponseResultManager;
-import cn.blackshop.common.utils.BeanUtils;
 import cn.blackshop.user.api.dto.o.UserOutDTO;
+import cn.blackshop.user.api.entity.SysUser;
 import cn.blackshop.user.service.SysUserService;
-import cn.hutool.crypto.SmUtil;
+import cn.hutool.http.HttpStatus;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * 用户控制层
@@ -24,24 +31,42 @@ import org.springframework.web.bind.annotation.*;
  * @author zibin
  */
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/sysuser")
 @AllArgsConstructor
 @Api(value="系统用户接口",tags = "系统用户接口")
 public class SysUserController {
 
 	private final SysUserService sysUserService;
 
-
-	@GetMapping("/getUserByUsername")
-	@ApiOperation(value = "根据用户名获取用户信息", httpMethod = "GET", notes = "根据用户名获取用户信息")
-	ResponseResult<UserOutDTO> getUserByUsername(@RequestParam("username") String username) {
-		return ResponseResultManager.setResultSuccess(BeanUtils.transfrom(UserOutDTO.class, sysUserService.getUserByUsername(username)));
+	@GetMapping("/page")
+	@ApiOperation(value = "根据用户名获取用户实体", httpMethod = "GET", notes = "根据用户名获取用户实体")
+	public ResponseResult<List<UserOutDTO>> getUserPage(Page page) {
+		return ResponseResultManager.setResultSuccess(sysUserService.getUserPage(page));
+		//return ResponseResultManager.setResultSuccess(sysUserService.getUserByUsername(username));
 	}
 
-	@PostMapping("/existMobileNumber")
-	@ApiOperation(value = "判断手机号码是否存在", httpMethod = "POST", notes = "判断手机号码是否存在")
-	ResponseResult<Boolean> existMobileNumber(@RequestParam("mobileNumber") String mobileNumber) {
-		return ResponseResultManager.setResultSuccess(Boolean.TRUE);
+
+	@GetMapping("/details/{username}")
+	@ApiOperation(value = "根据用户名获取用户实体", httpMethod = "GET", notes = "根据用户名获取用户实体")
+	public ResponseResult<UserOutDTO> user(@PathVariable String username) {
+		return ResponseResultManager.setResultSuccess(sysUserService.getUserByUsername(username));
+	}
+
+	/**
+	 * 获取指定用户信息
+	 * 包括用户实体、角色、权限
+	 *
+	 * @return 获取用户信息
+	 */
+	@GetMapping("/info/{username}")
+	@ApiOperation(value = "根据用户名获取用户信息，包括权限角色", httpMethod = "GET", notes = "根据用户名获取用户信息，包括权限角色")
+	public ResponseResult info(@PathVariable String username) {
+		SysUser user = sysUserService.getOne(Wrappers.<SysUser>query()
+				.lambda().eq(SysUser::getUsername, username));
+		if (user == null) {
+			return ResponseResultManager.setResultError(HttpStatus.HTTP_UNAUTHORIZED, String.format("用户信息为空 %s", username));
+		}
+		return ResponseResultManager.setResultSuccess(sysUserService.getUserInfo(user));
 	}
 
 }

@@ -5,30 +5,27 @@
  * <p>
  * black-shop(黑店) 版权所有,并保留所有权利。
  */
+
 package cn.blackshop.user.service;
 
-import cn.blackshop.common.core.basic.ResponseResult;
+import cn.blackshop.user.api.dto.UserInfoDTO;
 import cn.blackshop.user.api.dto.o.UserOutDTO;
-import cn.blackshop.user.entity.SysUser;
-import cn.blackshop.user.mapper.SysUserMapper;
-import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
+import cn.blackshop.user.api.entity.SysUser;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
- * UserBasicServiceImpl
+ * SysUserService
  *
  * @author zibin
  */
-@Service
-@AllArgsConstructor
-public class SysUserService {
-	private final SysUserMapper sysUserMapper;
+public interface SysUserService extends IService<SysUser> {
 
-	public ResponseResult<UserOutDTO> getUserInfo(String token) {
-		return null;
-	}
+	UserInfoDTO getUserInfo(SysUser sysUser);
 
-	public SysUser getUserByUsername(String username) {
-		return sysUserMapper.selectByUsername(username);
-	}
+	UserOutDTO getUserByUsername(String username);
+
+	List<UserOutDTO> getUserPage(Page page);
 }
